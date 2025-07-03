@@ -1,19 +1,20 @@
 import { Metadata } from "next";
 import { ensureStartsWith } from "./utils";
 
-
-
 const { TWITTER_CREATOR, TWITTER_SITE } = process.env;
+
 const twitterCreator = TWITTER_CREATOR
   ? ensureStartsWith(TWITTER_CREATOR, "@")
-  : undefined;
+  : "@genzhire";
+
 const twitterSite = TWITTER_SITE
   ? ensureStartsWith(TWITTER_SITE, "https://")
-  : undefined;
+  : "https://genzhirehub.com";
+
 export function constructMetadata({
-  title = "Strathspace - Find Your Perfect Match at Strathspace",
-  description = "Connect with fellow students and find meaningful relationships",
-  image = "https://res.cloudinary.com/db0i0umxn/image/upload/v1739634861/Screenshot_2025-02-15_184329_vwfank.png",
+  title = "GenZHire – Empowering University Students to Get Hired",
+  description = "GenZHire connects University students with top internship and job opportunities. Build your profile, get discovered, and kickstart your career.",
+  image = "https://genzhirehub.com/og-image.png",
   icons = "/favicon.ico",
   noIndex = false,
 }: {
@@ -29,26 +30,29 @@ export function constructMetadata({
     openGraph: {
       title,
       description,
+      url: "https://genzhirehub.com",
+      siteName: "GenZHire",
       images: [
         {
           url: image,
         },
       ],
+      type: "website",
     },
-    ...(twitterCreator &&
-      twitterSite && {
-        twitter: {
-          card: "summary_large_image",
-          creator: twitterCreator,
-          site: twitterSite,
-        },
-      }),
+    twitter: {
+      card: "summary_large_image",
+      creator: twitterCreator,
+      site: twitterSite,
+      title,
+      description,
+      images: [image],
+    },
     icons,
-    metadataBase: new URL("https://strathspace.com/"),
+    metadataBase: new URL("https://genzhirehub.com/"),
     ...(noIndex && {
       robots: {
-        index: true,
-        follow: true,
+        index: false,
+        follow: false,
       },
     }),
   };
