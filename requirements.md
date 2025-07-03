@@ -1,7 +1,7 @@
 
 # 📄 `requirements.md`
 
-**Project Name:** StrathTalent (working name)
+**Project Name:** GenzHireHub
 **Purpose:** Connect Strathmore students with job opportunities through a centralized platform for students and recruiters.
 
 ---
@@ -133,7 +133,7 @@ createdAt: timestamp
 
 ## 🔐 5. Auth & Access Control
 
-* [ ] JWT-based auth (or Supabase auth if needed)
+* [ ] JWT-based auth 
 * [ ] Role-based routing: students can't access company dashboards and vice versa
 * [ ] Middleware for protected routes
 
@@ -145,7 +145,7 @@ createdAt: timestamp
 * [ ] **Styling:** Tailwind CSS + shadcn/ui
 * [ ] **ORM:** Drizzle ORM (PostgreSQL - Neon)
 * [ ] **Forms:** React Hook Form + Zod
-* [ ] **File Uploads:** UploadThing or Vercel Blob (for CV)
+* [ ] **File Uploads:** Cloudflare R2
 * [ ] **SEO:** Add meta tags for visibility
 * [ ] **Hosting:** Vercel
 
