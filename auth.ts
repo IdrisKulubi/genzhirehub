@@ -2,7 +2,8 @@ import NextAuth, { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import { eq } from "drizzle-orm";
 import db from "./db/drizzle";
-import { users } from "./db/schema";
+import { users, students, companies } from "./db/schema";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 declare module "next-auth" {
   interface Session {
@@ -38,7 +39,7 @@ export const {
     }),
  
   ],
-  // adapter: DrizzleAdapter(db), // Temporarily disabled to test account linking
+  adapter: DrizzleAdapter(db),
   session: {
     strategy: "jwt",
   },
@@ -81,14 +82,23 @@ export const {
             let profileCompleted = false;
 
             if (dbUser.role === 'student') {
-              const [student] = await db.select().from(users)
-                .leftJoin(users, eq(users.id, dbUser.id))
-                .where(eq(users.id, dbUser.id))
+              const [studentProfile] = await db.select().from(students)
+                .where(eq(students.userId, dbUser.id))
                 .limit(1);
-              // This should be checking students table, but keeping simple for now
-              hasProfile = true; // Will be properly implemented when we add students table check
+              
+              if(studentProfile) {
+                hasProfile = true;
+                profileCompleted = studentProfile.profileCompleted || false;
+              }
             } else if (dbUser.role === 'company') {
-              hasProfile = true; // Will be properly implemented when we add companies table check
+              const [companyProfile] = await db.select().from(companies)
+                .where(eq(companies.userId, dbUser.id))
+                .limit(1);
+
+              if(companyProfile) {
+                hasProfile = true;
+                profileCompleted = companyProfile.profileCompleted || false;
+              }
             }
 
             session.user.hasProfile = hasProfile;

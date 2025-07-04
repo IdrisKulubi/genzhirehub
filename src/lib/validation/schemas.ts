@@ -41,8 +41,7 @@ export const companyProfileSchema = z.object({
   contactPhone: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number').optional().or(z.literal('')),
 });
 
-// Job posting validation
-export const jobPostSchema = z.object({
+const baseJobPostSchema = z.object({
   title: z.string().min(5, 'Job title must be at least 5 characters').max(100),
   description: z.string().min(50, 'Description must be at least 50 characters').max(2000),
   requirements: z.string().max(1000, 'Requirements must be less than 1000 characters').optional(),
@@ -58,7 +57,10 @@ export const jobPostSchema = z.object({
   deadline: z.date().min(new Date(), 'Deadline must be in the future'),
   remote: z.boolean().default(false),
   applicationUrl: z.string().url('Invalid application URL').optional().or(z.literal('')),
-}).refine((data) => {
+});
+
+// Job posting validation
+export const jobPostSchema = baseJobPostSchema.refine((data) => {
   if (data.salaryMin && data.salaryMax) {
     return data.salaryMax >= data.salaryMin;
   }
@@ -149,7 +151,7 @@ export const createCompanyProfileFormSchema = companyProfileSchema.extend({
   logoFile: z.instanceof(File).optional(),
 });
 
-export const createJobPostFormSchema = jobPostSchema.extend({
+export const createJobPostFormSchema = baseJobPostSchema.extend({
   skills: z.string().transform((str) => str.split(',').map(s => s.trim()).filter(s => s.length > 0)),
   tags: z.string().transform((str) => str.split(',').map(s => s.trim()).filter(s => s.length > 0)),
 });
