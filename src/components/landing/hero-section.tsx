@@ -30,7 +30,7 @@ export default function HeroSection() {
               className="bg-white/80 text-blue-700 border-blue-200 px-4 py-2 text-sm font-medium backdrop-blur-sm"
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              Launching Soon - Join 500+ Early Adopters
+              Launching Soon - Join 300+ Early Adopters
             </Badge>
           </div>
           

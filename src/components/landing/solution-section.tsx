@@ -49,9 +49,9 @@ export default function SolutionSection() {
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             What if Job Searching was{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
+           
               Actually Enjoyable?
-            </span>
+            
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
             GenzHireHub transforms the job search experience from frustrating to fulfilling. 
