@@ -51,6 +51,7 @@ export const students = pgTable(
       .unique(),
     fullName: text("full_name").notNull(),
     course: text("course").notNull(),
+    university: text("university"),
     yearOfStudy: text("year_of_study").notNull(),
     skills: jsonb("skills").$type<string[]>().default([]),
     interests: jsonb("interests").$type<string[]>().default([]),

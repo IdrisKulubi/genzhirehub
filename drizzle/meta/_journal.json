@@ -8,6 +8,13 @@
       "when": 1751575308883,
       "tag": "0000_material_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1751669149921,
+      "tag": "0001_brainy_scourge",
+      "breakpoints": true
     }
   ]
 }

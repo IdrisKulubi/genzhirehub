@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/themes/theme-provider";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
 import { constructMetadata } from "@/lib/metadata";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,19 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster 
+        position="top-right" 
+        richColors 
+        closeButton 
+        expand={false}
+        toastOptions={{
+          style: {
+            background: 'white',
+            border: '1px solid #e2e8f0',
+            color: '#1e293b',
+          },
+        }}
+      />
           </ThemeProvider>
         </AuthSessionProvider>
       </body>

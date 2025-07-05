@@ -13,10 +13,11 @@ export const userSchema = z.object({
 export const studentProfileSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters').max(100),
   course: z.string().min(2, 'Course must be at least 2 characters').max(100),
-  yearOfStudy: z.enum(['1', '2', '3', '4', '5'], {
+  yearOfStudy: z.enum(['1', '2', '3', '4', '5', 'graduate'], {
     required_error: 'Year of study is required',
   }),
-  skills: z.array(z.string().min(1).max(50)).max(20, 'Maximum 20 skills allowed'),
+  university: z.string().max(100).optional(),
+  skills: z.array(z.string().min(1).max(50)).min(1, 'Please add at least one skill').max(20, 'Maximum 20 skills allowed'),
   interests: z.array(z.string().min(1).max(50)).max(10, 'Maximum 10 interests allowed'),
   bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
   linkedinUrl: z.string().url('Invalid LinkedIn URL').optional().or(z.literal('')),
@@ -24,6 +25,7 @@ export const studentProfileSchema = z.object({
   githubUrl: z.string().url('Invalid GitHub URL').optional().or(z.literal('')),
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number').optional().or(z.literal('')),
   location: z.string().max(100).optional(),
+  joinWaitlist: z.boolean().optional(),
 });
 
 // Company profile validation
@@ -137,7 +139,7 @@ export const studentSearchSchema = z.object({
   query: z.string().max(100).optional(),
   course: z.string().max(100).optional(),
   skills: z.array(z.string()).max(10).optional(),
-  yearOfStudy: z.enum(['1', '2', '3', '4', '5']).optional(),
+  yearOfStudy: z.enum(['1', '2', '3', '4', '5', 'graduate']).optional(),
   page: z.number().int().min(1).default(1),
   limit: z.number().int().min(1).max(50).default(10),
 });

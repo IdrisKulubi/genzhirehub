@@ -1,3 +1,5 @@
+import { Toaster } from 'sonner';
+
 export default function OnboardingLayout({
   children,
 }: {
@@ -10,6 +12,7 @@ export default function OnboardingLayout({
           {children}
         </div>
       </div>
+  
     </div>
   );
 } 

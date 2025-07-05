@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useActionState } from 'react';
+import React, { useState, useActionState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,13 +23,17 @@ import {
   Plus,
   X,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
-import { createStudentProfileAction } from '@/lib/actions/student-actions';
+import { createStudentProfileAction, updateStudentCVAction } from '@/lib/actions/student-actions';
+import CVUpload from '@/components/forms/cv-upload';
+import { toast } from 'sonner';
 
 interface FormState {
   success: boolean;
   error?: string;
+  message?: string;
   fieldErrors?: Record<string, string[]>;
 }
 
@@ -45,11 +49,60 @@ export default function StudentProfileCreation() {
   const [newSkill, setNewSkill] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
   const [newInterest, setNewInterest] = useState('');
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [cvUrl, setCvUrl] = useState<string>('');
   const [joinWaitlist, setJoinWaitlist] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form state to preserve values during validation errors
+  const [formData, setFormData] = useState({
+    fullName: '',
+    course: '',
+    yearOfStudy: '',
+    university: '',
+    bio: '',
+    linkedinUrl: '',
+    portfolioUrl: '',
+    githubUrl: '',
+    phone: '',
+    location: ''
+  });
+  
   const router = useRouter();
   const { data: session } = useSession();
+
+  // Initialize form data with session values
+  React.useEffect(() => {
+    if (session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: session.user.name || '',
+      }));
+    }
+  }, [session]);
+
+  // Handle form submission results with toast notifications
+  React.useEffect(() => {
+    if (state.success) {
+      toast.success(state.message || 'Profile created successfully!', {
+        description: 'Welcome to GenzHireHub! Redirecting...',
+        duration: 3000,
+      });
+      
+      // Small delay to show success message, then redirect
+      const timer = setTimeout(() => {
+        router.push('/onboarding/success');
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    if (state.error) {
+      toast.error('Profile Creation Failed', {
+        description: state.error,
+        duration: 5000,
+      });
+    }
+  }, [state.success, state.error, state.message, router]);
 
   const addSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim()) && skills.length < 10) {
@@ -73,40 +126,111 @@ export default function StudentProfileCreation() {
     setInterests(interests.filter(interest => interest !== interestToRemove));
   };
 
-  const handleCvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('Please upload a PDF or Word document');
-        return;
-      }
-      
-      // Validate file size (5MB max)
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        alert('File size must be less than 5MB');
-        return;
-      }
-      
-      setCvFile(file);
-      setUploadProgress(100);
+  const handleCvUploadSuccess = async (url: string, key: string) => {
+    setCvUrl(url);
+    toast.success('CV uploaded successfully!', {
+      description: 'Your CV has been uploaded and saved.',
+      duration: 3000,
+    });
+    
+    // Update the student profile with the new CV URL
+    try {
+      await updateStudentCVAction(url);
+    } catch (error) {
+      console.error('Failed to update CV URL:', error);
+      toast.error('Failed to save CV', {
+        description: 'CV uploaded but failed to save to profile. Please try again.',
+        duration: 5000,
+      });
     }
+  };
+
+  const handleCvUploadError = (error: string) => {
+    console.error('CV upload error:', error);
+    toast.error('CV Upload Failed', {
+      description: error,
+      duration: 5000,
+    });
+  };
+
+  const handleCvDelete = () => {
+    setCvUrl('');
+    toast.success('CV removed', {
+      description: 'Your CV has been removed from your profile.',
+      duration: 3000,
+    });
   };
 
   const getFormProgress = () => {
     let progress = 0;
-    const formData = new FormData();
     
     // Check required fields
-    if (formData.get('fullName')) progress += 20;
-    if (formData.get('course')) progress += 20;
-    if (formData.get('yearOfStudy')) progress += 20;
+    if (formData.fullName.trim()) progress += 20;
+    if (formData.course.trim()) progress += 20;
+    if (formData.yearOfStudy) progress += 20;
     if (skills.length > 0) progress += 20;
-    if (cvFile) progress += 20;
+    if (cvUrl) progress += 20;
     
     return progress;
+  };
+
+  // Handle form input changes
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Enhanced form submission with client-side validation
+  const handleFormSubmit = async (formDataSubmission: FormData) => {
+    // Add controlled form data to FormData
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataSubmission.set(key, value);
+    });
+
+    // Client-side validation for better UX
+    if (!formData.fullName.trim()) {
+      toast.error('Missing Information', {
+        description: 'Please enter your full name',
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (!formData.course.trim()) {
+      toast.error('Missing Information', {
+        description: 'Please enter your course/major',
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (!formData.yearOfStudy) {
+      toast.error('Missing Information', {
+        description: 'Please select your year of study',
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (skills.length === 0) {
+      toast.error('Missing Information', {
+        description: 'Please add at least one skill',
+        duration: 4000,
+      });
+      return;
+    }
+
+    // Set loading state
+    setIsSubmitting(true);
+
+    try {
+      // Submit the form
+      await formAction(formDataSubmission);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -130,11 +254,13 @@ export default function StudentProfileCreation() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction} className="space-y-6">
+          <form action={handleFormSubmit} className="space-y-6">
             {/* Hidden fields for skills and interests */}
             <input type="hidden" name="skills" value={JSON.stringify(skills)} />
             <input type="hidden" name="interests" value={JSON.stringify(interests)} />
             <input type="hidden" name="joinWaitlist" value={joinWaitlist.toString()} />
+            
+
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -144,7 +270,8 @@ export default function StudentProfileCreation() {
                   name="fullName"
                   placeholder="John Doe"
                   required
-                  defaultValue={session?.user?.name || ''}
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
                 />
                 {state.fieldErrors?.fullName && (
                   <p className="text-sm text-red-500">{state.fieldErrors.fullName[0]}</p>
@@ -158,7 +285,7 @@ export default function StudentProfileCreation() {
                   name="email"
                   type="email"
                   placeholder="john@university.edu"
-                  defaultValue={session?.user?.email || ''}
+                  value={session?.user?.email || ''}
                   disabled
                 />
               </div>
@@ -180,6 +307,8 @@ export default function StudentProfileCreation() {
                     name="course"
                     placeholder="Computer Science"
                     required
+                    value={formData.course}
+                    onChange={(e) => handleInputChange('course', e.target.value)}
                   />
                   {state.fieldErrors?.course && (
                     <p className="text-sm text-red-500">{state.fieldErrors.course[0]}</p>
@@ -188,7 +317,12 @@ export default function StudentProfileCreation() {
 
                 <div className="space-y-2">
                   <Label htmlFor="yearOfStudy">Year of Study *</Label>
-                  <Select name="yearOfStudy" required>
+                  <Select 
+                    name="yearOfStudy" 
+                    required 
+                    value={formData.yearOfStudy}
+                    onValueChange={(value) => handleInputChange('yearOfStudy', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select year" />
                     </SelectTrigger>
@@ -213,6 +347,8 @@ export default function StudentProfileCreation() {
                   id="university"
                   name="university"
                   placeholder="University of Technology"
+                  value={formData.university}
+                  onChange={(e) => handleInputChange('university', e.target.value)}
                 />
               </div>
             </div>
@@ -227,7 +363,7 @@ export default function StudentProfileCreation() {
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Technical Skills</Label>
+                  <Label>Technical Skills *</Label>
                   <div className="flex gap-2">
                     <Input
                       value={newSkill}
@@ -261,9 +397,15 @@ export default function StudentProfileCreation() {
                       </Badge>
                     ))}
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Add up to 10 skills ({skills.length}/10)
+                  <p className={`text-sm ${skills.length === 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                    {skills.length === 0 
+                      ? 'Please add at least 1 skill (0/10)' 
+                      : `Add up to 10 skills (${skills.length}/10)`
+                    }
                   </p>
+                  {state.fieldErrors?.skills && (
+                    <p className="text-sm text-red-500">{state.fieldErrors.skills[0]}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -319,6 +461,8 @@ export default function StudentProfileCreation() {
                   name="bio"
                   placeholder="Tell us about yourself, your goals, and what you're looking for..."
                   rows={4}
+                  value={formData.bio}
+                  onChange={(e) => handleInputChange('bio', e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
                   Optional - This will help employers understand your background and goals
@@ -332,6 +476,8 @@ export default function StudentProfileCreation() {
                   name="linkedinUrl"
                   type="url"
                   placeholder="https://linkedin.com/in/yourprofile"
+                  value={formData.linkedinUrl}
+                  onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
                 />
               </div>
             </div>
@@ -344,43 +490,12 @@ export default function StudentProfileCreation() {
                 CV/Resume Upload
               </h3>
               
-              <div className="space-y-2">
-                <Label htmlFor="cv">Upload your CV/Resume</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <input
-                    id="cv"
-                    name="cv"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleCvUpload}
-                    className="hidden"
-                  />
-                  <div className="space-y-2">
-                    <Upload className="h-8 w-8 text-gray-400 mx-auto" />
-                    <div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => document.getElementById('cv')?.click()}
-                      >
-                        Choose File
-                      </Button>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        PDF, DOC, or DOCX (max 5MB)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {cvFile && (
-                  <div className="bg-green-50 p-3 rounded-lg flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm text-green-800">
-                      {cvFile.name} uploaded successfully
-                    </span>
-                  </div>
-                )}
-              </div>
+              <CVUpload
+                onUploadSuccess={handleCvUploadSuccess}
+                onUploadError={handleCvUploadError}
+                onDelete={handleCvDelete}
+                initialFileUrl={cvUrl}
+              />
             </div>
 
             <Separator />
@@ -409,7 +524,7 @@ export default function StudentProfileCreation() {
               </div>
             </div>
 
-            {state.error && (
+            {state.error && !state.success && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{state.error}</AlertDescription>
@@ -417,10 +532,10 @@ export default function StudentProfileCreation() {
             )}
 
             {state.success && (
-              <Alert>
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Profile created successfully! Welcome to GenzHireHub.
+              <Alert className="border-green-200 bg-green-50">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  Profile created successfully! Redirecting to welcome page...
                 </AlertDescription>
               </Alert>
             )}
@@ -431,11 +546,28 @@ export default function StudentProfileCreation() {
                 variant="outline"
                 onClick={() => router.push('/onboarding/role')}
                 className="flex-1"
+                disabled={isSubmitting}
               >
                 Back
               </Button>
-              <Button type="submit" className="flex-1">
-                Create Profile & Join Waitlist
+              <Button 
+                type="submit" 
+                className="flex-1" 
+                disabled={isSubmitting || state.success}
+              >
+                {state.success ? (
+                  <>
+                    <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                    Profile Created!
+                  </>
+                ) : isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Profile...
+                  </>
+                ) : (
+                  'Create Profile & Join Waitlist'
+                )}
               </Button>
             </div>
           </form>
