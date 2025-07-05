@@ -142,19 +142,7 @@ export default function OnboardingSuccess() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (session?.user?.role === 'student') {
-                    router.push('/onboarding/student-profile');
-                  } else {
-                    router.push('/onboarding/company-profile');
-                  }
-                }}
-                className="h-12"
-              >
-                Update Profile
-              </Button>
+             
               <Button
                 onClick={() => router.push('/landing')}
                 className="h-12"
