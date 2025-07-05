@@ -148,10 +148,10 @@ export default function OnboardingSuccess() {
       <div className="space-y-4 pt-6">
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
-            onClick={() => router.push('/login')}
+            onClick={() => router.push('/onboarding/success')}
             className="flex-1 sm:flex-initial"
           >
-            Return to Login
+            Refresh Dashboard
           </Button>
           <Button
             variant="outline"

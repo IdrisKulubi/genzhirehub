@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/'];
+  const publicRoutes = ['/login', '/login/callback', '/'];
   
   // API routes and static files should be allowed through
   if (
@@ -48,17 +48,17 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // If user is fully onboarded but accessing wrong area, redirect appropriately
-  if (pathname.startsWith('/student/') && session.user.role !== 'student') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  if (pathname.startsWith('/company/') && session.user.role !== 'company') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  if (pathname.startsWith('/admin/') && session.user.role !== 'admin') {
-    return NextResponse.redirect(new URL('/', request.url));
+  // If user is fully onboarded, redirect to success page
+  if (session.user.hasProfile && session.user.profileCompleted) {
+    // Allow access to success page
+    if (pathname === '/onboarding/success') {
+      return NextResponse.next();
+    }
+    
+    // Redirect other paths to success page
+    if (pathname === '/' || pathname.startsWith('/onboarding/')) {
+      return NextResponse.redirect(new URL('/onboarding/success', request.url));
+    }
   }
 
   return NextResponse.next();

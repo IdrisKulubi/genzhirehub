@@ -21,7 +21,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const result = await signIn("google", {
-        callbackUrl: userType === "student" ? "/student/dashboard" : "/company/dashboard",
+        callbackUrl: "/login/callback",
         redirect: false,
       });
       

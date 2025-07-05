@@ -39,13 +39,16 @@ export default function Home() {
       return;
     }
 
-    // User is fully set up, redirect to dashboard
-    if (session.user.role === 'student') {
-      router.push('/student/dashboard');
-    } else if (session.user.role === 'company') {
-      router.push('/company/dashboard');
+    // User is fully set up, redirect to success page
+    if (session.user.hasProfile && session.user.profileCompleted) {
+      router.push('/onboarding/success');
     } else {
-      router.push('/admin/dashboard');
+      // Profile incomplete, redirect to complete it
+      if (session.user.role === 'student') {
+        router.push('/onboarding/student-profile');
+      } else if (session.user.role === 'company') {
+        router.push('/onboarding/company-profile');
+      }
     }
   }, [session, status, router]);
 
