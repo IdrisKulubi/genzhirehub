@@ -47,6 +47,8 @@ export const {
     signIn: "/login",
     error: "/error",
   },
+  // Add trustHost for production deployment
+  trustHost: true,
   callbacks: {
     async jwt({ token, account, user }) {
       if (account && user) {
