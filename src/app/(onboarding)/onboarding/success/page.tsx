@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,166 +7,226 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   CheckCircle, 
+  User, 
   Mail, 
-  Users, 
+  GraduationCap, 
+  Building2, 
+  FileText, 
+  Users,
   Rocket,
-  Trophy,
-  Star,
   Clock
 } from "lucide-react";
 
 export default function OnboardingSuccess() {
-  const [confetti, setConfetti] = useState(true);
   const router = useRouter();
   const { data: session } = useSession();
 
-  useEffect(() => {
-    // Hide confetti after 3 seconds
-    const timer = setTimeout(() => setConfetti(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
+  const getUserDisplayName = () => {
+    if (session?.user?.name) return session.user.name;
+    if (session?.user?.email) return session.user.email.split('@')[0];
+    return 'User';
+  };
 
-  const features = [
+  const getUserRole = () => {
+    if (!session?.user?.role) return 'Getting started...';
+    return session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1);
+  };
+
+  const nextSteps = [
     {
-      icon: <Users className="h-5 w-5" />,
-      title: "Connect with Employers",
-      description: "Get discovered by top companies looking for your skills"
+      icon: Users,
+      title: "You're on the Waitlist",
+      description: "We'll notify you when GenzHireHub launches with exclusive early access",
+      status: "completed"
     },
     {
-      icon: <Trophy className="h-5 w-5" />,
-      title: "Exclusive Opportunities",
-      description: "Access internships and jobs posted exclusively on GenzHireHub"
+      icon: FileText,
+      title: "Profile Created",
+      description: "Your profile is ready and will be visible to companies when we launch",
+      status: "completed"
     },
     {
-      icon: <Star className="h-5 w-5" />,
-      title: "Smart Matching",
-      description: "Our AI matches you with opportunities that fit your profile"
-    },
-    {
-      icon: <Clock className="h-5 w-5" />,
-      title: "Early Access",
-      description: "Be among the first to use our platform when it launches"
+      icon: Rocket,
+      title: "Launch Notification",
+      description: "Get notified first when we go live and start connecting with employers",
+      status: "pending"
     }
   ];
 
   return (
-    <div className="space-y-6 text-center">
-      {confetti && (
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-green-100/20 animate-pulse" />
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-          <CheckCircle className="h-10 w-10 text-green-600" />
-        </div>
-        
-        <h1 className="text-4xl font-bold tracking-tight text-green-600">
-          Welcome to GenzHireHub! 🎉
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Your profile has been created successfully and you've joined our exclusive waitlist.
-        </p>
-      </div>
-
-      <Card className="border-green-200 bg-green-50/50">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-center gap-2 text-green-700">
-            <Mail className="h-5 w-5" />
-            You're on the Waitlist!
-          </CardTitle>
-          <CardDescription>
-            We'll notify you at <strong>{session?.user?.email}</strong> when we launch
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-center gap-2">
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              <Users className="h-3 w-3 mr-1" />
-              Early Access Member
-            </Badge>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-              <Rocket className="h-3 w-3 mr-1" />
-              Profile Complete
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto space-y-8">
+          
+          {/* Welcome Header */}
+          <div className="text-center space-y-4">
+            <div className="flex justify-center mb-4">
+              <div className="w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+              Welcome to GenzHireHub, {getUserDisplayName()}! 🎉
+            </h1>
+            
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Your profile has been created successfully! You're now part of our exclusive early access community.
+            </p>
+            
+            <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-4 py-2">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Profile Complete • {getUserRole()}
             </Badge>
           </div>
-          
-          <p className="text-sm text-muted-foreground">
-            Position: <strong>#2,847</strong> in the waitlist
-          </p>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>What happens next?</CardTitle>
-          <CardDescription>
-            Here's what you can expect while we prepare for launch
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {features.map((feature, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
-                  {feature.icon}
+          {/* Profile Summary */}
+          <Card className="border-2 border-blue-200 dark:border-blue-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5 text-blue-500" />
+                Your Profile Summary
+              </CardTitle>
+              <CardDescription>
+                Here's what we have on file for you
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {getUserDisplayName()}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {getUserRole()}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <h4 className="font-semibold text-sm">{feature.title}</h4>
-                  <p className="text-xs text-muted-foreground">{feature.description}</p>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {session?.user?.email}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Verified Email
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                    {session?.user?.role === 'student' ? (
+                      <GraduationCap className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    ) : (
+                      <Building2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      Profile Complete
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Ready for launch
+                    </p>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      <Card className="border-blue-200 bg-blue-50/50">
-        <CardContent className="pt-6">
-          <div className="space-y-3">
-            <h3 className="font-semibold text-blue-700">Stay Connected</h3>
-            <p className="text-sm text-blue-600">
-              Follow us on social media for updates and tips on landing your dream job
-            </p>
-            <div className="flex justify-center gap-3">
-              <Button variant="outline" size="sm" className="border-blue-200">
-                LinkedIn
-              </Button>
-              <Button variant="outline" size="sm" className="border-blue-200">
-                Twitter
-              </Button>
-              <Button variant="outline" size="sm" className="border-blue-200">
-                Instagram
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          {/* Status Steps */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Journey with GenzHireHub</CardTitle>
+              <CardDescription>
+                Here's what happens next
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {nextSteps.map((step, index) => (
+                  <div key={index} className="flex items-start gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      step.status === 'completed' 
+                        ? 'bg-green-100 dark:bg-green-900' 
+                        : 'bg-gray-100 dark:bg-gray-800'
+                    }`}>
+                      <step.icon className={`w-5 h-5 ${
+                        step.status === 'completed' 
+                          ? 'text-green-600 dark:text-green-400' 
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                          {step.title}
+                        </h3>
+                        {step.status === 'completed' && (
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                        )}
+                        {step.status === 'pending' && (
+                          <Clock className="w-4 h-4 text-orange-500" />
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-      <div className="space-y-4 pt-6">
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button
-            onClick={() => router.push('/onboarding/success')}
-            className="flex-1 sm:flex-initial"
-          >
-            Refresh Dashboard
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => window.location.href = 'mailto:hello@genzhirehub.com'}
-            className="flex-1 sm:flex-initial"
-          >
-            Contact Support
-          </Button>
+          {/* What's Next */}
+          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                What Happens Next?
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                We're putting the finishing touches on GenzHireHub. You'll be among the first to know when we launch!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (session?.user?.role === 'student') {
+                      router.push('/onboarding/student-profile');
+                    } else {
+                      router.push('/onboarding/company-profile');
+                    }
+                  }}
+                >
+                  Update Profile
+                </Button>
+                <Button
+                  onClick={() => router.push('/landing')}
+                >
+                  Back to Home
+                </Button>
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Questions? Email us at{" "}
+                  <a href="mailto:hello@genzhirehub.com" className="text-blue-600 hover:underline">
+                    hello@genzhirehub.com
+                  </a>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        
-        <p className="text-xs text-muted-foreground">
-          Have questions? We're here to help at{" "}
-          <a href="mailto:hello@genzhirehub.com" className="underline">
-            hello@genzhirehub.com
-          </a>
-        </p>
       </div>
     </div>
   );

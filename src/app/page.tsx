@@ -16,8 +16,8 @@ export default function Home() {
     if (status === 'loading') return; // Still loading
 
     if (!session) {
-      // Not authenticated, redirect to login
-      router.push('/login');
+      // Not authenticated, redirect to landing page
+      router.push('/landing');
       return;
     }
 
@@ -52,27 +52,22 @@ export default function Home() {
     }
   }, [session, status, router]);
 
+  // Show loading state while redirecting
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
-            <Skeleton className="h-4 w-full mb-2" />
-            <Skeleton className="h-4 w-2/3 mx-auto" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="space-y-4">
+          <Skeleton className="h-16 w-16 rounded-full mx-auto" />
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-32 mx-auto" />
+        </div>
       </div>
     );
   }
 
-  // Fallback loading state
+  // Fallback UI (should rarely be seen due to redirects)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
@@ -97,7 +92,7 @@ export default function Home() {
             </div>
           </div>
           <Button 
-            onClick={() => router.push('/login')}
+            onClick={() => router.push('/landing')}
             className="w-full"
           >
             Get Started

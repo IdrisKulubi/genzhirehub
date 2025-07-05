@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/login/callback', '/'];
+  const publicRoutes = ['/login', '/login/callback', '/landing', '/'];
   
   // API routes and static files should be allowed through
   if (
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
 
   // Check if user is authenticated
   if (!session?.user) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/landing', request.url));
   }
 
   // Handle onboarding flow
