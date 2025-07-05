@@ -55,7 +55,7 @@ export default function SolutionSection() {
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
             GenzHireHub transforms the job search experience from frustrating to fulfilling. 
-            Here's how we make it happen:
+            Here&apos;s how we make it happen:
           </p>
         </div>
 

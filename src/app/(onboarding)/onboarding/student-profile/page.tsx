@@ -24,7 +24,9 @@ import {
   X,
   CheckCircle,
   AlertCircle,
-  Loader2
+  Loader2,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { createStudentProfileAction, updateStudentCVAction } from '@/lib/actions/student-actions';
 import CVUpload from '@/components/forms/cv-upload';
@@ -234,345 +236,408 @@ export default function StudentProfileCreation() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Create Your Student Profile</h1>
-        <p className="text-lg text-muted-foreground">
-          Tell us about yourself to help employers find you
-        </p>
-        <Progress value={getFormProgress()} className="w-full max-w-md mx-auto" />
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Personal Information
-          </CardTitle>
-          <CardDescription>
-            Basic information about yourself
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form action={handleFormSubmit} className="space-y-6">
-            {/* Hidden fields for skills and interests */}
-            <input type="hidden" name="skills" value={JSON.stringify(skills)} />
-            <input type="hidden" name="interests" value={JSON.stringify(interests)} />
-            <input type="hidden" name="joinWaitlist" value={joinWaitlist.toString()} />
-            
-
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  placeholder="John Doe"
-                  required
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                />
-                {state.fieldErrors?.fullName && (
-                  <p className="text-sm text-red-500">{state.fieldErrors.fullName[0]}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="john@university.edu"
-                  value={session?.user?.email || ''}
-                  disabled
-                />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <CheckCircle className="h-4 w-4" />
+            Step 2 of 3
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+            Create Your Profile
+          </h1>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
+            Tell us about yourself to help employers discover your potential
+          </p>
+          <div className="max-w-md mx-auto">
+            <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 mb-2">
+              <span>Profile Completion</span>
+              <span>{getFormProgress()}%</span>
             </div>
+            <Progress value={getFormProgress()} className="h-2" />
+          </div>
+        </div>
 
-            <Separator />
+        {/* Main Form */}
+        <div className="max-w-4xl mx-auto">
+          <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+            <CardContent className="p-8">
+              <form action={handleFormSubmit} className="space-y-8">
+                {/* Hidden fields for skills and interests */}
+                <input type="hidden" name="skills" value={JSON.stringify(skills)} />
+                <input type="hidden" name="interests" value={JSON.stringify(interests)} />
+                <input type="hidden" name="joinWaitlist" value={joinWaitlist.toString()} />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
-                Education
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="course">Course/Major *</Label>
-                  <Input
-                    id="course"
-                    name="course"
-                    placeholder="Computer Science"
-                    required
-                    value={formData.course}
-                    onChange={(e) => handleInputChange('course', e.target.value)}
+                {/* Personal Information */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                      <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Personal Information</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Basic information about yourself</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName" className="text-sm font-medium">Full Name *</Label>
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        placeholder="John Doe"
+                        required
+                        value={formData.fullName}
+                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                        className="h-12"
+                      />
+                      {state.fieldErrors?.fullName && (
+                        <p className="text-sm text-red-500">{state.fieldErrors.fullName[0]}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="john@university.edu"
+                        value={session?.user?.email || ''}
+                        disabled
+                        className="h-12 bg-slate-50 dark:bg-slate-800"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="my-8" />
+
+                {/* Education */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                      <GraduationCap className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Education</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Your academic background</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="course" className="text-sm font-medium">Course/Major *</Label>
+                      <Input
+                        id="course"
+                        name="course"
+                        placeholder="Computer Science"
+                        required
+                        value={formData.course}
+                        onChange={(e) => handleInputChange('course', e.target.value)}
+                        className="h-12"
+                      />
+                      {state.fieldErrors?.course && (
+                        <p className="text-sm text-red-500">{state.fieldErrors.course[0]}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="yearOfStudy" className="text-sm font-medium">Year of Study *</Label>
+                      <Select 
+                        name="yearOfStudy" 
+                        required 
+                        value={formData.yearOfStudy}
+                        onValueChange={(value) => handleInputChange('yearOfStudy', value)}
+                      >
+                        <SelectTrigger className="h-12">
+                          <SelectValue placeholder="Select year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1st Year</SelectItem>
+                          <SelectItem value="2">2nd Year</SelectItem>
+                          <SelectItem value="3">3rd Year</SelectItem>
+                          <SelectItem value="4">4th Year</SelectItem>
+                          <SelectItem value="5">5th Year</SelectItem>
+                          <SelectItem value="graduate">Graduate</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {state.fieldErrors?.yearOfStudy && (
+                        <p className="text-sm text-red-500">{state.fieldErrors.yearOfStudy[0]}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="university" className="text-sm font-medium">University</Label>
+                    <Input
+                      id="university"
+                      name="university"
+                      placeholder="University of Technology"
+                      value={formData.university}
+                      onChange={(e) => handleInputChange('university', e.target.value)}
+                      className="h-12"
+                    />
+                  </div>
+                </div>
+
+                <Separator className="my-8" />
+
+                {/* Skills & Interests */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                      <Briefcase className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Skills & Interests</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">What you're good at and passionate about</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">Technical Skills *</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={newSkill}
+                          onChange={(e) => setNewSkill(e.target.value)}
+                          placeholder="Add a skill (e.g., React, Python)"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                          className="h-12"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={addSkill}
+                          disabled={!newSkill.trim() || skills.length >= 10}
+                          className="h-12 w-12"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {skills.map((skill) => (
+                          <Badge key={skill} variant="secondary" className="flex items-center gap-1 px-3 py-1">
+                            {skill}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-auto p-0 hover:bg-transparent"
+                              onClick={() => removeSkill(skill)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        ))}
+                      </div>
+                      <p className={`text-sm ${skills.length === 0 ? 'text-red-500' : 'text-slate-500'}`}>
+                        {skills.length === 0 
+                          ? 'Please add at least 1 skill (0/10)' 
+                          : `Add up to 10 skills (${skills.length}/10)`
+                        }
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">Interests</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={newInterest}
+                          onChange={(e) => setNewInterest(e.target.value)}
+                          placeholder="Add an interest (e.g., AI, Web Dev)"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInterest())}
+                          className="h-12"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={addInterest}
+                          disabled={!newInterest.trim() || interests.length >= 10}
+                          className="h-12 w-12"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {interests.map((interest) => (
+                          <Badge key={interest} variant="outline" className="flex items-center gap-1 px-3 py-1">
+                            {interest}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-auto p-0 hover:bg-transparent"
+                              onClick={() => removeInterest(interest)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        ))}
+                      </div>
+                      <p className="text-sm text-slate-500">
+                        Add up to 10 interests ({interests.length}/10)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="my-8" />
+
+                {/* About You */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                      <User className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-900 dark:text-white">About You</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Tell us more about yourself</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="bio" className="text-sm font-medium">Bio</Label>
+                      <Textarea
+                        id="bio"
+                        name="bio"
+                        placeholder="Tell us about yourself, your goals, and what you're looking for..."
+                        rows={4}
+                        value={formData.bio}
+                        onChange={(e) => handleInputChange('bio', e.target.value)}
+                        className="resize-none"
+                      />
+                      <p className="text-sm text-slate-500">
+                        Optional - This will help employers understand your background and goals
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="linkedinUrl" className="text-sm font-medium">LinkedIn Profile</Label>
+                      <Input
+                        id="linkedinUrl"
+                        name="linkedinUrl"
+                        type="url"
+                        placeholder="https://linkedin.com/in/yourprofile"
+                        value={formData.linkedinUrl}
+                        onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
+                        className="h-12"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="my-8" />
+
+                {/* CV Upload */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center">
+                      <FileText className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-900 dark:text-white">CV/Resume Upload</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Upload your CV to showcase your experience</p>
+                    </div>
+                  </div>
+
+                  <CVUpload
+                    onUploadSuccess={handleCvUploadSuccess}
+                    onUploadError={handleCvUploadError}
+                    onDelete={handleCvDelete}
+                    initialFileUrl={cvUrl}
                   />
-                  {state.fieldErrors?.course && (
-                    <p className="text-sm text-red-500">{state.fieldErrors.course[0]}</p>
-                  )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="yearOfStudy">Year of Study *</Label>
-                  <Select 
-                    name="yearOfStudy" 
-                    required 
-                    value={formData.yearOfStudy}
-                    onValueChange={(value) => handleInputChange('yearOfStudy', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1st Year</SelectItem>
-                      <SelectItem value="2">2nd Year</SelectItem>
-                      <SelectItem value="3">3rd Year</SelectItem>
-                      <SelectItem value="4">4th Year</SelectItem>
-                      <SelectItem value="5">5th Year</SelectItem>
-                      <SelectItem value="graduate">Graduate</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {state.fieldErrors?.yearOfStudy && (
-                    <p className="text-sm text-red-500">{state.fieldErrors.yearOfStudy[0]}</p>
-                  )}
-                </div>
-              </div>
+                <Separator className="my-8" />
 
-              <div className="space-y-2">
-                <Label htmlFor="university">University</Label>
-                <Input
-                  id="university"
-                  name="university"
-                  placeholder="University of Technology"
-                  value={formData.university}
-                  onChange={(e) => handleInputChange('university', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Briefcase className="h-5 w-5" />
-                Skills & Interests
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Technical Skills *</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={newSkill}
-                      onChange={(e) => setNewSkill(e.target.value)}
-                      placeholder="Add a skill (e.g., React, Python)"
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                {/* Waitlist */}
+                <div className="space-y-4">
+                  <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-800 dark:text-blue-300">
+                      GenzHireHub is launching soon! Join our waitlist to be among the first to access 
+                      exclusive job opportunities and connect with top employers.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="waitlist"
+                      checked={joinWaitlist}
+                      onChange={(e) => setJoinWaitlist(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={addSkill}
-                      disabled={!newSkill.trim() || skills.length >= 10}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                    <Label htmlFor="waitlist" className="text-sm font-medium">
+                      Yes, I want to join the waitlist and be notified when GenzHireHub launches
+                    </Label>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.map((skill) => (
-                      <Badge key={skill} variant="secondary" className="flex items-center gap-1">
-                        {skill}
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-0 hover:bg-transparent"
-                          onClick={() => removeSkill(skill)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className={`text-sm ${skills.length === 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                    {skills.length === 0 
-                      ? 'Please add at least 1 skill (0/10)' 
-                      : `Add up to 10 skills (${skills.length}/10)`
-                    }
-                  </p>
-                  {state.fieldErrors?.skills && (
-                    <p className="text-sm text-red-500">{state.fieldErrors.skills[0]}</p>
-                  )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Interests</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={newInterest}
-                      onChange={(e) => setNewInterest(e.target.value)}
-                      placeholder="Add an interest (e.g., AI, Web Dev)"
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInterest())}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={addInterest}
-                      disabled={!newInterest.trim() || interests.length >= 10}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {interests.map((interest) => (
-                      <Badge key={interest} variant="outline" className="flex items-center gap-1">
-                        {interest}
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-0 hover:bg-transparent"
-                          onClick={() => removeInterest(interest)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Add up to 10 interests ({interests.length}/10)
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">About You</h3>
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  name="bio"
-                  placeholder="Tell us about yourself, your goals, and what you're looking for..."
-                  rows={4}
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                />
-                <p className="text-sm text-muted-foreground">
-                  Optional - This will help employers understand your background and goals
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="linkedinUrl">LinkedIn Profile</Label>
-                <Input
-                  id="linkedinUrl"
-                  name="linkedinUrl"
-                  type="url"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  value={formData.linkedinUrl}
-                  onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                CV/Resume Upload
-              </h3>
-              
-              <CVUpload
-                onUploadSuccess={handleCvUploadSuccess}
-                onUploadError={handleCvUploadError}
-                onDelete={handleCvDelete}
-                initialFileUrl={cvUrl}
-              />
-            </div>
-
-            <Separator />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Join Our Waitlist</h3>
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  GenzHireHub is launching soon! Join our waitlist to be among the first to access 
-                  exclusive job opportunities and connect with top employers.
-                </AlertDescription>
-              </Alert>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="waitlist"
-                  checked={joinWaitlist}
-                  onChange={(e) => setJoinWaitlist(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <Label htmlFor="waitlist" className="text-sm">
-                  Yes, I want to join the waitlist and be notified when GenzHireHub launches
-                </Label>
-              </div>
-            </div>
-
-            {state.error && !state.success && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{state.error}</AlertDescription>
-              </Alert>
-            )}
-
-            {state.success && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
-                  Profile created successfully! Redirecting to welcome page...
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push('/onboarding/role')}
-                className="flex-1"
-                disabled={isSubmitting}
-              >
-                Back
-              </Button>
-              <Button 
-                type="submit" 
-                className="flex-1" 
-                disabled={isSubmitting || state.success}
-              >
-                {state.success ? (
-                  <>
-                    <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
-                    Profile Created!
-                  </>
-                ) : isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Profile...
-                  </>
-                ) : (
-                  'Create Profile & Join Waitlist'
+                {/* Error/Success Messages */}
+                {state.error && !state.success && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{state.error}</AlertDescription>
+                  </Alert>
                 )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+
+                {state.success && (
+                  <Alert className="border-green-200 bg-green-50 dark:bg-green-900/20">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800 dark:text-green-300">
+                      Profile created successfully! Redirecting to welcome page...
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push('/onboarding/role')}
+                    className="flex-1 h-12"
+                    disabled={isSubmitting}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="flex-1 h-12 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100" 
+                    disabled={isSubmitting || state.success}
+                  >
+                    {state.success ? (
+                      <>
+                        <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                        Profile Created!
+                      </>
+                    ) : isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Profile...
+                      </>
+                    ) : (
+                      <>
+                        Create Profile & Join Waitlist
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

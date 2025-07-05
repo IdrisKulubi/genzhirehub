@@ -3,11 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Building2, Users, Briefcase } from "lucide-react";
+import { GraduationCap, Building2, CheckCircle, Loader2 } from "lucide-react";
 import { setUserRoleAction } from '@/lib/actions/user-actions';
+import { cn } from '@/lib/utils';
 
 export default function RoleSelection() {
   const [loading, setLoading] = useState(false);
@@ -16,8 +14,7 @@ export default function RoleSelection() {
   const { data: session } = useSession();
 
   const handleRoleSelect = async (role: 'student' | 'company') => {
-    if (!session?.user) {
-      router.push('/login');
+    if (!session?.user || loading) {
       return;
     }
 
@@ -26,13 +23,8 @@ export default function RoleSelection() {
 
     try {
       const result = await setUserRoleAction(role);
-      
       if (result.success) {
-        if (role === 'student') {
-          router.push('/onboarding/student-profile');
-        } else {
-          router.push('/onboarding/company-profile');
-        }
+        router.push(`/onboarding/${role}-profile`);
       } else {
         console.error('Failed to set role:', result.error);
         setLoading(false);
@@ -45,103 +37,114 @@ export default function RoleSelection() {
     }
   };
 
+  const roles = [
+    {
+      id: 'student',
+      title: 'Student',
+      subtitle: 'Find your next opportunity',
+      description: 'Access internships, part-time jobs, and graduate positions.',
+      icon: GraduationCap,
+      features: [
+        'Create your professional profile',
+        'Showcase skills and projects',
+        'Connect with top employers'
+      ],
+      colorClasses: {
+        iconContainer: 'bg-blue-900/30',
+        icon: 'text-blue-400',
+        hoverBorder: 'hover:border-blue-500/50',
+        ring: 'ring-blue-500',
+        bullet: 'bg-blue-500',
+      },
+    },
+    {
+      id: 'company',
+      title: 'Company',
+      subtitle: 'Discover top talent',
+      description: 'Connect with skilled students and fresh graduates.',
+      icon: Building2,
+      features: [
+        'Build out your company profile',
+        'Post job opportunities',
+        'Browse and filter candidates'
+      ],
+      colorClasses: {
+        iconContainer: 'bg-green-900/30',
+        icon: 'text-green-400',
+        hoverBorder: 'hover:border-green-500/50',
+        ring: 'ring-green-500',
+        bullet: 'bg-green-500',
+      },
+    }
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Welcome to GenzHireHub! 🚀</h1>
-        <p className="text-lg text-muted-foreground">
-          Let's get you set up. Are you a student looking for opportunities or a company looking to hire?
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#0D1117] text-white flex flex-col items-center justify-center p-2 sm:p-6 lg:p-4">
+      <div className="w-full max-w-5xl text-center">
+        {/* Header */}
+        <div className="mb-12">
+          <div className="inline-flex items-center gap-2 bg-slate-800 text-slate-300 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-slate-700">
+            <CheckCircle className="h-4 w-4 text-blue-400" />
+            Step 1 of 3
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+            Welcome to GenzHireHub
+          </h1>
+          <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto">
+            Choose your path to get started with your personalized experience.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Student Option */}
-        <Card 
-          className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-            selectedRole === 'student' ? 'ring-2 ring-blue-500' : ''
-          }`}
-          onClick={() => !loading && handleRoleSelect('student')}
-        >
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-              <GraduationCap className="h-8 w-8 text-blue-600" />
-            </div>
-            <CardTitle className="text-xl">I'm a Student</CardTitle>
-            <CardDescription>
-              Looking for internships, part-time jobs, or graduate opportunities
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <h4 className="font-semibold text-sm">What you'll do:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Create your profile with skills and interests</li>
-                <li>• Upload your CV or resume</li>
-                <li>• Browse and apply for opportunities</li>
-                <li>• Connect with employers</li>
-              </ul>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">
-                <Users className="h-3 w-3 mr-1" />
-                Join 10,000+ students
-              </Badge>
-            </div>
-            <Button 
-              className="w-full" 
-              disabled={loading}
-              variant={selectedRole === 'student' ? 'default' : 'outline'}
-            >
-              {loading && selectedRole === 'student' ? 'Setting up...' : 'Continue as Student'}
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Role Cards */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {roles.map((role) => {
+            const Icon = role.icon;
+            const isSelected = selectedRole === role.id;
+            const isLoading = loading && isSelected;
 
-        {/* Company Option */}
-        <Card 
-          className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-            selectedRole === 'company' ? 'ring-2 ring-green-500' : ''
-          }`}
-          onClick={() => !loading && handleRoleSelect('company')}
-        >
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-              <Building2 className="h-8 w-8 text-green-600" />
-            </div>
-            <CardTitle className="text-xl">I'm a Company</CardTitle>
-            <CardDescription>
-              Looking to hire talented students and fresh graduates
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <h4 className="font-semibold text-sm">What you'll do:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Set up your company profile</li>
-                <li>• Post job opportunities</li>
-                <li>• Browse student profiles</li>
-                <li>• Connect with top talent</li>
-              </ul>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">
-                <Briefcase className="h-3 w-3 mr-1" />
-                Join 500+ companies
-              </Badge>
-            </div>
-            <Button 
-              className="w-full" 
-              disabled={loading}
-              variant={selectedRole === 'company' ? 'default' : 'outline'}
-            >
-              {loading && selectedRole === 'company' ? 'Setting up...' : 'Continue as Company'}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="text-center text-sm text-muted-foreground">
-        <p>Don't worry, you can always change this later in your settings.</p>
+            return (
+              <div
+                key={role.id}
+                onClick={() => handleRoleSelect(role.id as 'student' | 'company')}
+                className={cn(
+                  'bg-[#161B22] border border-slate-800 rounded-2xl p-8 cursor-pointer group transition-all duration-300 relative',
+                  role.colorClasses.hoverBorder,
+                  isSelected && `ring-2 ring-offset-4 ring-offset-[#0D1117] ${role.colorClasses.ring}`,
+                  loading && !isSelected && 'opacity-50 cursor-not-allowed'
+                )}
+              >
+                {isLoading && (
+                  <div className="absolute inset-0 bg-[#161B22]/50 flex items-center justify-center rounded-2xl z-10">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                )}
+                <div className={cn("flex flex-col items-center text-center", isLoading && "opacity-50")}>
+                  <div className={cn("h-20 w-20 rounded-2xl flex items-center justify-center mb-6", role.colorClasses.iconContainer)}>
+                    <Icon className={cn("h-10 w-10", role.colorClasses.icon)} />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">{role.title}</h2>
+                  <p className="text-slate-400 mb-4">{role.subtitle}</p>
+                  <p className="text-slate-500 text-sm mb-8 h-10">{role.description}</p>
+                  
+                  <ul className="text-left space-y-3 text-slate-400 text-sm w-full">
+                    {role.features.map(feature => (
+                      <li key={feature} className="flex items-center gap-3">
+                        <span className={cn("h-1.5 w-1.5 rounded-full", role.colorClasses.bullet)}></span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        <div className="text-center mt-12">
+          <p className="text-sm text-slate-500">
+            You can change your account type later in settings.
+          </p>
+        </div>
       </div>
     </div>
   );
