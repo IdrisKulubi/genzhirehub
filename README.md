@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/genzhirehub.svg" alt="GenzHireHub Logo" width="200"/>
+  <img src="public/logo.png" alt="GenzHireHub Logo" width="200"/>
   <h1>GenzHireHub</h1>
   <p>The Open-Source Job Board for Undergraduate Students.</p>
 
