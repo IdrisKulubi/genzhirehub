@@ -12,8 +12,8 @@ const twitterSite = TWITTER_SITE
   : "https://genzhirehub.com";
 
 export function constructMetadata({
-  title = "GenZHire – Empowering University Students to Get Hired",
-  description = "GenZHire connects University students with top internship and job opportunities. Build your profile, get discovered, and kickstart your career.",
+  title = "GenZHireHub – Empowering Undergraduate Students to Get Hired",
+  description = "GenZHireHub connects Undergraduate students with top internship and job opportunities. Build your profile, get discovered, and kickstart your career.",
   image = "https://genzhirehub.com/og-image.png",
   icons = "/favicon.ico",
   noIndex = false,
