@@ -38,7 +38,7 @@ export default function FooterSection() {
             </p>
             <div className="flex items-center gap-6">
               <Link
-                href="https://x.com/GenzHireHub"
+                href="https://x.com/IdrisMulesi"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
               >
                 <span className="sr-only">X (formerly Twitter)</span>
@@ -48,7 +48,7 @@ export default function FooterSection() {
               </Link>
 
               <Link
-                href="https://github.com/kulub/GenzHireHub"
+                href="https://github.com/IdrisKulubi/genzhirehub"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
               >
                 <span className="sr-only">GitHub</span>
